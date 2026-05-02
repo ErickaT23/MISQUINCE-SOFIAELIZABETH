@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Quince Sofía Elizabeth</title>
+  <!-- SEO básico -->
+  <meta name="title" content="Mis Quince Sofía Elizabeth">
+  <meta name="description" content="Estás invitado a celebrar los Quince de Sofía Elizabeth.">
+  <!-- Open Graph (WhatsApp, Facebook, Messenger) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Mis Quince Sofía Elizabeth">
+  <meta property="og:description" content="Estás invitado a celebrar Quince de Sofía Elizabeth">
+  <meta property="og:image" content="https://i.postimg.cc/Vs2PG9pF/XVSE.png">
+  <meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="">
+  <link rel="icon" href="https://i.postimg.cc/Vs2PG9pF/XVSE.png" type="image/png">
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Arapey:ital@0;1&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: "Arapey", serif;
+      text-align: center;
+    }
+
+    h1, h2 {
+      font-family: 'Great Vibes', cursive;
+      font-weight: 400;
+      margin: 0;
+
+      background: radial-gradient(circle, #ffd985, #e0a92f, #ffd985);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+      padding: 10px;
+    }
+
+    h2 {
+      font-size: 3.5rem;
+      margin-top: -10px;
+      margin-bottom: 2rem;
+      padding: 10px;
+    }
+
+    a.boton {
+      text-decoration: none;
+      background-color: #016070;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 40px;
+      font-size: 1.3rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      font-family: "Arapey", serif;
+      font-style: italic;
+    }
+
+    a.boton:hover {
+      background-color: #295861;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Mis Quince</h1>
+  <h2>Sofía Elizabeth</h2>
+
+  <a 
+    class="boton"
+    id="verInvitacion"
+    href="#"
+    target="_blank" 
+    rel="noopener noreferrer">
+    Ver Invitación
+  </a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const pases = params.get('pases') || "1";
+
+    const archivos = {
+      "1": "/Mis Quince Sofia Elizabeth - 1 Pase.pdf",
+      "2": "/Mis Quince Sofia Elizabeth - 2 Pases.pdf",
+      "3": "/Mis Quince Sofía Elizabeth - 3 pases.pdf",
+      "4": "/Mis Quince Sofía Elizabeth - 4 pases.pdf",
+      "5": "/Mis Quince Sofía Elizabeth - 5 pases.pdf"
+    };
+
+    const boton = document.getElementById("verInvitacion");
+    boton.href = archivos[pases] || archivos["1"];
+  </script>
+
+</body>
+</html>
