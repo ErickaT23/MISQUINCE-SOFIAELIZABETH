@@ -8,6 +8,7 @@
   <meta property="og:description" content="Estás invitado a celebrar los Quince de Sofía Elizabeth">
   <meta property="og:image" content="https://i.postimg.cc/Vs2PG9pF/XVSE.png">
   <meta property="og:type" content="website">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Arapey:ital@0;1&display=swap" rel="stylesheet">
 
@@ -106,37 +107,47 @@
       width: 100%;
       max-width: 480px;
       display: none;
+      /* Las 2 tiras pegadas sin espacio */
+      line-height: 0;
+      font-size: 0;
     }
 
     .inv-wrapper img {
       width: 100%;
       height: auto;
       display: block;
+      /* Sin espacio entre tiras */
+      vertical-align: top;
     }
 
-    /* Área clickeable transparente sobre el diseño */
+    /* Área clickeable transparente */
     .btn-overlay {
       position: absolute;
       left: 20%;
       width: 56%;
       cursor: pointer;
       background: transparent;
-      /* Descomenta para ver posición: background: rgba(255,0,0,0.3); */
+      /* Descomenta para depurar: background: rgba(255,0,0,0.3); */
     }
 
-    /* CÓMO LLEGAR - Iglesia */
+    /*
+      Los botones están posicionados en % de la altura TOTAL (ambas tiras).
+      La imagen original es 1500x24000px, dividida en 2 tiras de 12000px cada una.
+      Posiciones originales (sobre 24000px total):
+        CÓMO LLEGAR iglesia:   ~41.8% = px 10032
+        CÓMO LLEGAR recepción: ~48.2% = px 11568
+        CONFIRMAR:             ~96.1% = px 23064
+    */
     #btn-iglesia {
       top: 41.8%;
       height: 2.0%;
     }
 
-    /* CÓMO LLEGAR - Recepción */
     #btn-recepcion {
       top: 48.2%;
       height: 2.0%;
     }
 
-    /* CONFIRMAR TU ASISTENCIA */
     #btn-confirmar {
       top: 96.1%;
       height: 1.8%;
@@ -163,8 +174,12 @@
     </div>
 
     <div class="inv-wrapper" id="inv-wrapper">
-      <img id="inv-img" src="" alt="Invitación Sofía Elizabeth">
+      <!-- Tira 1: mitad superior -->
+      <img id="inv-img-1" src="" alt="Invitación parte 1">
+      <!-- Tira 2: mitad inferior -->
+      <img id="inv-img-2" src="" alt="Invitación parte 2">
 
+      <!-- Botones superpuestos -->
       <a id="btn-iglesia"
          class="btn-overlay"
          href="https://maps.app.goo.gl/9F5r8nwYoiW6bLav8"
@@ -193,18 +208,19 @@
       '4': 'https://wa.link/oktjoh',
       '5': 'https://wa.link/kfr7uu'
     };
+
     const imagenes = {
-    '1': '/Mis Quince Sofia Elizabeth - 1 Pase.png',
-    '2': '/Mis Quince Sofia Elizabeth - 2 Pases.png',
-    '3': '/Mis Quince Sofía Elizabeth - 3 pases.png',
-    '4': '/Mis Quince Sofía Elizabeth - 4 pases.png',
-    '5': '/Mis Quince Sofía Elizabeth - 5 pases.png'
+      '1': ['Mis Quince Sofia Elizabeth - 1 Pase - parte1.webp', 'Mis Quince Sofia Elizabeth - 1 Pase - parte2.webp'],
+      '2': ['Mis Quince Sofia Elizabeth - 2 Pases - parte1.webp', 'Mis Quince Sofia Elizabeth - 2 Pases - parte2.webp'],
+      '3': ['Mis Quince Sofia Elizabeth - 3 Pases - parte1.webp', 'Mis Quince Sofia Elizabeth - 3 Pases - parte2.webp'],
+      '4': ['Mis Quince Sofia Elizabeth - 4 Pases - parte1.webp', 'Mis Quince Sofia Elizabeth - 4 Pases - parte2.webp'],
+      '5': ['Mis Quince Sofia Elizabeth - 5 Pases - parte1.webp', 'Mis Quince Sofia Elizabeth - 5 Pases - parte2.webp'],
     };
 
-    const params  = new URLSearchParams(window.location.search);
-    const pases   = params.get('pases') || '1';
-    const imgSrc  = imagenes[pases] || imagenes['1'];
-    const rsvp    = rsvpLinks[pases] || rsvpLinks['1'];
+    const params = new URLSearchParams(window.location.search);
+    const pases  = params.get('pases') || '1';
+    const imgs   = imagenes[pases] || imagenes['1'];
+    const rsvp   = rsvpLinks[pases] || rsvpLinks['1'];
 
     document.getElementById('btn-confirmar').href = rsvp;
 
@@ -212,15 +228,27 @@
       document.getElementById('pantalla-inicio').style.display = 'none';
       document.getElementById('visor').style.display = 'flex';
 
-      const img = document.getElementById('inv-img');
-      img.src = imgSrc;
+      const img1 = document.getElementById('inv-img-1');
+      const img2 = document.getElementById('inv-img-2');
 
-      img.onload = () => {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('inv-wrapper').style.display = 'block';
+      // Codificar espacios en el nombre del archivo
+      img1.src = encodeURIComponent(imgs[0]).replace(/%20/g, '%20');
+      img2.src = encodeURIComponent(imgs[1]).replace(/%20/g, '%20');
+
+      // Mostrar cuando ambas carguen
+      let cargadas = 0;
+      const onLoad = () => {
+        cargadas++;
+        if (cargadas === 2) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('inv-wrapper').style.display = 'block';
+        }
       };
 
-      img.onerror = () => {
+      img1.onload = onLoad;
+      img2.onload = onLoad;
+
+      img1.onerror = img2.onerror = () => {
         document.getElementById('loading').innerHTML =
           '<p style="color:#c00;padding:20px">Error cargando la imagen. Intenta de nuevo.</p>';
       };
