@@ -8,7 +8,6 @@
   <meta property="og:description" content="Estás invitado a celebrar los Quince de Sofía Elizabeth">
   <meta property="og:image" content="https://i.postimg.cc/Vs2PG9pF/XVSE.png">
   <meta property="og:type" content="website">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Arapey:ital@0;1&display=swap" rel="stylesheet">
 
@@ -16,7 +15,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #0d1f18;
+      background: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -24,7 +23,7 @@
       font-family: "Arapey", serif;
     }
 
-    /* ── Pantalla de carga inicial ── */
+    /* ── Pantalla de inicio ── */
     #pantalla-inicio {
       display: flex;
       flex-direction: column;
@@ -33,27 +32,24 @@
       min-height: 100vh;
       padding: 32px;
       text-align: center;
+      background: #ffffff;
+      width: 100%;
     }
 
-    #pantalla-inicio h1 {
-      font-family: 'Great Vibes', cursive;
-      font-size: 3.2rem;
-      background: linear-gradient(135deg, #ffd985, #e0a92f, #ffd985);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 6px;
-    }
-
+    #pantalla-inicio h1,
     #pantalla-inicio h2 {
       font-family: 'Great Vibes', cursive;
-      font-size: 3.2rem;
-      background: linear-gradient(135deg, #ffd985, #e0a92f, #ffd985);
+      font-weight: 400;
+      background: radial-gradient(circle, #ffd985, #e0a92f, #ffd985);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 32px;
+      margin: 0;
+      padding: 10px;
     }
+
+    #pantalla-inicio h1 { font-size: 3.2rem; margin-bottom: 4px; }
+    #pantalla-inicio h2 { font-size: 3.2rem; margin-bottom: 36px; }
 
     #btn-ver {
       background: #016070;
@@ -66,197 +62,169 @@
       font-style: italic;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
 
     #btn-ver:hover { background: #295861; transform: translateY(-2px); }
+    #btn-ver:active { transform: translateY(0); }
 
-    /* ── Visor PDF ── */
+    /* ── Visor ── */
     #visor {
       display: none;
       flex-direction: column;
       align-items: center;
       width: 100%;
-      padding-bottom: 40px;
+      background: #ffffff;
     }
 
-    /* ── Spinner de carga ── */
+    /* ── Spinner ── */
     #loading {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 16px;
-      color: #ffd985;
+      padding: 60px 24px;
+      color: #016070;
       font-style: italic;
       font-size: 1.05rem;
-      padding: 48px 24px;
-      text-align: center;
     }
 
     .spinner {
       width: 44px;
       height: 44px;
-      border: 3px solid rgba(255, 217, 133, 0.2);
-      border-top-color: #ffd985;
+      border: 3px solid rgba(1, 96, 112, 0.2);
+      border-top-color: #016070;
       border-radius: 50%;
       animation: girar 0.8s linear infinite;
     }
 
-    @keyframes girar {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes girar { to { transform: rotate(360deg); } }
 
-    /* Cada página del PDF */
-    .pagina-pdf {
+    /* ── Contenedor imagen + botones ── */
+    .inv-wrapper {
+      position: relative;
       width: 100%;
       max-width: 480px;
-      display: block;
-      line-height: 0;
-      font-size: 0;
-      opacity: 0;
-      transform: translateY(16px);
-      animation: aparecerPagina 0.5s ease forwards;
+      display: none;
     }
 
-    @keyframes aparecerPagina {
-      to { opacity: 1; transform: translateY(0); }
+    .inv-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
-    .pagina-pdf canvas {
-      width: 100% !important;
-      height: auto !important;
-      display: block;
+    /* Área clickeable transparente sobre el diseño */
+    .btn-overlay {
+      position: absolute;
+      left: 20%;
+      width: 56%;
+      cursor: pointer;
+      background: transparent;
+      /* Descomenta para ver posición: background: rgba(255,0,0,0.3); */
+    }
+
+    /* CÓMO LLEGAR - Iglesia */
+    #btn-iglesia {
+      top: 41.8%;
+      height: 2.0%;
+    }
+
+    /* CÓMO LLEGAR - Recepción */
+    #btn-recepcion {
+      top: 48.2%;
+      height: 2.0%;
+    }
+
+    /* CONFIRMAR TU ASISTENCIA */
+    #btn-confirmar {
+      top: 96.1%;
+      height: 1.8%;
+      left: 10%;
+      width: 80%;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Pantalla inicial con el botón -->
+  <!-- Pantalla de inicio -->
   <div id="pantalla-inicio">
     <h1>Mis Quince</h1>
     <h2>Sofía Elizabeth</h2>
     <button id="btn-ver">Ver Invitación</button>
   </div>
 
-  <!-- Contenedor del visor -->
+  <!-- Visor -->
   <div id="visor">
     <div id="loading">
       <div class="spinner"></div>
       <span>Cargando invitación...</span>
     </div>
-    <div id="paginas"></div>
+
+    <div class="inv-wrapper" id="inv-wrapper">
+      <img id="inv-img" src="" alt="Invitación Sofía Elizabeth">
+
+      <a id="btn-iglesia"
+         class="btn-overlay"
+         href="https://maps.app.goo.gl/9F5r8nwYoiW6bLav8"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Cómo llegar a la iglesia"></a>
+
+      <a id="btn-recepcion"
+         class="btn-overlay"
+         href="https://maps.app.goo.gl/vfxGkGt2G6f8eDQt8"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Cómo llegar a la recepción"></a>
+
+      <a id="btn-confirmar"
+         class="btn-overlay"
+         href="#"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Confirmar asistencia"></a>
+    </div>
   </div>
 
-  <!-- PDF.js desde CDN oficial -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
-    // Configura el worker de PDF.js
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-    // Lee el parámetro ?pases= de la URL
-    const params = new URLSearchParams(window.location.search);
-    const pases = params.get('pases') || '1';
-
-    const archivos = {
-      '1': '/Mis Quince Sofia Elizabeth - 1 Pase.pdf',
-      '2': '/Mis Quince Sofia Elizabeth - 2 Pases.pdf',
-      '3': '/Mis Quince Sofia Elizabeth - 3 Pases.pdf',
-      '4': '/Mis Quince Sofia Elizabeth - 4 Pases.pdf',
-      '5': '/Mis Quince Sofia Elizabeth - 5 Pases.pdf'
+    const rsvpLinks = {
+      '1': 'https://wa.link/0jcf69',
+      '2': 'https://wa.link/nyo61r',
+      '3': 'https://wa.link/ylc2u9',
+      '4': 'https://wa.link/oktjoh',
+      '5': 'https://wa.link/kfr7uu'
+    };
+    const imagenes = {
+    '1': '/Mis Quince Sofia Elizabeth - 1 Pase.png',
+    '2': '/Mis Quince Sofia Elizabeth - 2 Pases.png',
+    '3': '/Mis Quince Sofía Elizabeth - 3 pases.png',
+    '4': '/Mis Quince Sofía Elizabeth - 4 pases.png',
+    '5': '/Mis Quince Sofía Elizabeth - 5 pases.png'
     };
 
-    const archivoPDF = archivos[pases] || archivos['1'];
+    const params  = new URLSearchParams(window.location.search);
+    const pases   = params.get('pases') || '1';
+    const imgSrc  = imagenes[pases] || imagenes['1'];
+    const rsvp    = rsvpLinks[pases] || rsvpLinks['1'];
+
+    document.getElementById('btn-confirmar').href = rsvp;
 
     document.getElementById('btn-ver').addEventListener('click', () => {
       document.getElementById('pantalla-inicio').style.display = 'none';
       document.getElementById('visor').style.display = 'flex';
-      cargarPDF(archivoPDF);
+
+      const img = document.getElementById('inv-img');
+      img.src = imgSrc;
+
+      img.onload = () => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('inv-wrapper').style.display = 'block';
+      };
+
+      img.onerror = () => {
+        document.getElementById('loading').innerHTML =
+          '<p style="color:#c00;padding:20px">Error cargando la imagen. Intenta de nuevo.</p>';
+      };
     });
-
-    async function cargarPDF(url) {
-      const contenedor = document.getElementById('paginas');
-      const loading = document.getElementById('loading');
-
-      try {
-        const pdf = await pdfjsLib.getDocument(url).promise;
-
-        // Renderiza cada página con animación escalonada
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const pagina = await pdf.getPage(i);
-
-          const viewport = pagina.getViewport({ scale: 1 });
-          const anchoTarget = Math.min(window.innerWidth, 480);
-          const escala = (anchoTarget * window.devicePixelRatio) / viewport.width;
-          const viewportEscalado = pagina.getViewport({ scale: escala });
-
-          const div = document.createElement('div');
-          div.className = 'pagina-pdf';
-          // Delay escalonado: cada página aparece 120ms después de la anterior
-          div.style.animationDelay = `${(i - 1) * 120}ms`;
-
-          const canvas = document.createElement('canvas');
-          canvas.width = viewportEscalado.width;
-          canvas.height = viewportEscalado.height;
-
-          div.appendChild(canvas);
-          contenedor.appendChild(div);
-
-          // Ocultar spinner cuando la primera página empieza a renderizar
-          if (i === 1) loading.style.display = 'none';
-
-          await pagina.render({
-            canvasContext: canvas.getContext('2d'),
-            viewport: viewportEscalado
-          }).promise;
-        }
-
-        habilitarLinks(pdf, contenedor);
-
-      } catch (err) {
-        loading.innerHTML = 'Error cargando el PDF. Intenta de nuevo.';
-        console.error(err);
-      }
-    }
-
-    // Hace los botones/links del PDF clicleables
-    async function habilitarLinks(pdf, contenedor) {
-      const paginas = contenedor.querySelectorAll('.pagina-pdf');
-
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const pagina = await pdf.getPage(i);
-        const anotaciones = await pagina.getAnnotations();
-        const canvas = paginas[i - 1].querySelector('canvas');
-        const rect = canvas.getBoundingClientRect();
-
-        const viewport = pagina.getViewport({ scale: 1 });
-        const escalaX = canvas.offsetWidth / viewport.width;
-        const escalaY = canvas.offsetHeight / viewport.height;
-
-        anotaciones.forEach(ann => {
-          if (ann.subtype === 'Link' && (ann.url || ann.dest)) {
-            const [x1, y1, x2, y2] = ann.rect;
-
-            const link = document.createElement('a');
-            link.href = ann.url || '#';
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.style.cssText = `
-              position: absolute;
-              left: ${x1 * escalaX}px;
-              bottom: ${y1 * escalaY}px;
-              width: ${(x2 - x1) * escalaX}px;
-              height: ${(y2 - y1) * escalaY}px;
-              cursor: pointer;
-            `;
-
-            paginas[i - 1].style.position = 'relative';
-            paginas[i - 1].appendChild(link);
-          }
-        });
-      }
-    }
   </script>
 
 </body>
