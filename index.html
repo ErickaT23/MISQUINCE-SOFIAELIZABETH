@@ -8,6 +8,7 @@
   <meta property="og:description" content="Estás invitado a celebrar los Quince de Sofía Elizabeth">
   <meta property="og:image" content="https://i.postimg.cc/Vs2PG9pF/XVSE.png">
   <meta property="og:type" content="website">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Arapey:ital@0;1&display=swap" rel="stylesheet">
 
@@ -79,12 +80,30 @@
       padding-bottom: 40px;
     }
 
+    /* ── Spinner de carga ── */
     #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
       color: #ffd985;
       font-style: italic;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       padding: 48px 24px;
       text-align: center;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255, 217, 133, 0.2);
+      border-top-color: #ffd985;
+      border-radius: 50%;
+      animation: girar 0.8s linear infinite;
+    }
+
+    @keyframes girar {
+      to { transform: rotate(360deg); }
     }
 
     /* Cada página del PDF */
@@ -92,9 +111,15 @@
       width: 100%;
       max-width: 480px;
       display: block;
-      /* Elimina cualquier espacio entre páginas */
       line-height: 0;
       font-size: 0;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: aparecerPagina 0.5s ease forwards;
+    }
+
+    @keyframes aparecerPagina {
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .pagina-pdf canvas {
@@ -116,7 +141,10 @@
 
   <!-- Contenedor del visor -->
   <div id="visor">
-    <div id="loading">Cargando invitación...</div>
+    <div id="loading">
+      <div class="spinner"></div>
+      <span>Cargando invitación...</span>
+    </div>
     <div id="paginas"></div>
   </div>
 
@@ -153,13 +181,11 @@
 
       try {
         const pdf = await pdfjsLib.getDocument(url).promise;
-        loading.style.display = 'none';
 
-        // Renderiza cada página
+        // Renderiza cada página con animación escalonada
         for (let i = 1; i <= pdf.numPages; i++) {
           const pagina = await pdf.getPage(i);
 
-          // Escala para que ocupe el ancho del teléfono nítidamente
           const viewport = pagina.getViewport({ scale: 1 });
           const anchoTarget = Math.min(window.innerWidth, 480);
           const escala = (anchoTarget * window.devicePixelRatio) / viewport.width;
@@ -167,6 +193,8 @@
 
           const div = document.createElement('div');
           div.className = 'pagina-pdf';
+          // Delay escalonado: cada página aparece 120ms después de la anterior
+          div.style.animationDelay = `${(i - 1) * 120}ms`;
 
           const canvas = document.createElement('canvas');
           canvas.width = viewportEscalado.width;
@@ -175,17 +203,19 @@
           div.appendChild(canvas);
           contenedor.appendChild(div);
 
+          // Ocultar spinner cuando la primera página empieza a renderizar
+          if (i === 1) loading.style.display = 'none';
+
           await pagina.render({
             canvasContext: canvas.getContext('2d'),
             viewport: viewportEscalado
           }).promise;
         }
 
-        // Después de renderizar, habilita los links del PDF
         habilitarLinks(pdf, contenedor);
 
       } catch (err) {
-        loading.textContent = 'Error cargando el PDF. Intenta de nuevo.';
+        loading.innerHTML = 'Error cargando el PDF. Intenta de nuevo.';
         console.error(err);
       }
     }
