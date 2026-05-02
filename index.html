@@ -2,101 +2,231 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Mis Quince Sofía Elizabeth</title>
   <meta property="og:title" content="Mis Quince Sofía Elizabeth">
-  <meta property="og:description" content="Estás invitado a celebrar Quince de Sofía Elizabeth">
+  <meta property="og:description" content="Estás invitado a celebrar los Quince de Sofía Elizabeth">
   <meta property="og:image" content="https://i.postimg.cc/Vs2PG9pF/XVSE.png">
   <meta property="og:type" content="website">
-  <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Arapey:ital@0;1&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Arapey:ital@0;1&display=swap" rel="stylesheet">
 
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background-color: #f8f8f8;
+      background: #0d1f18;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
       font-family: "Arapey", serif;
+    }
+
+    /* ── Pantalla de carga inicial ── */
+    #pantalla-inicio {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 32px;
       text-align: center;
     }
 
-    h1, h2 {
+    #pantalla-inicio h1 {
       font-family: 'Great Vibes', cursive;
-      font-weight: 400;
-      margin: 0;
-
-      background: radial-gradient(circle, #ffd985, #e0a92f, #ffd985);
+      font-size: 3.2rem;
+      background: linear-gradient(135deg, #ffd985, #e0a92f, #ffd985);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
     }
 
-    h1 {
-      font-size: 3.5rem;
-      margin-bottom: 0.5rem;
-      padding: 10px;
+    #pantalla-inicio h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3.2rem;
+      background: linear-gradient(135deg, #ffd985, #e0a92f, #ffd985);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 32px;
     }
 
-    h2 {
-      font-size: 3.5rem;
-      margin-top: -10px;
-      margin-bottom: 2rem;
-      padding: 10px;
-    }
-
-    a.boton {
-      text-decoration: none;
-      background-color: #016070;
+    #btn-ver {
+      background: #016070;
       color: white;
-      padding: 14px 32px;
+      border: none;
+      padding: 14px 36px;
       border-radius: 40px;
-      font-size: 1.3rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      font-size: 1.2rem;
       font-family: "Arapey", serif;
       font-style: italic;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
 
-    a.boton:hover {
-      background-color: #295861;
-      transform: translateY(-2px);
+    #btn-ver:hover { background: #295861; transform: translateY(-2px); }
+
+    /* ── Visor PDF ── */
+    #visor {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    #loading {
+      color: #ffd985;
+      font-style: italic;
+      font-size: 1.1rem;
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    /* Cada página del PDF */
+    .pagina-pdf {
+      width: 100%;
+      max-width: 480px;
+      display: block;
+      /* Elimina cualquier espacio entre páginas */
+      line-height: 0;
+      font-size: 0;
+    }
+
+    .pagina-pdf canvas {
+      width: 100% !important;
+      height: auto !important;
+      display: block;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Mis Quince</h1>
-  <h2>Sofía Elizabeth</h2>
+  <!-- Pantalla inicial con el botón -->
+  <div id="pantalla-inicio">
+    <h1>Mis Quince</h1>
+    <h2>Sofía Elizabeth</h2>
+    <button id="btn-ver">Ver Invitación</button>
+  </div>
 
-  <a 
-    class="boton"
-    id="verInvitacion"
-    href="#"
-    target="_blank" 
-    rel="noopener noreferrer">
-    Ver Invitación
-  </a>
+  <!-- Contenedor del visor -->
+  <div id="visor">
+    <div id="loading">Cargando invitación...</div>
+    <div id="paginas"></div>
+  </div>
 
+  <!-- PDF.js desde CDN oficial -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
+    // Configura el worker de PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // Lee el parámetro ?pases= de la URL
     const params = new URLSearchParams(window.location.search);
-    const pases = params.get('pases') || "1";
+    const pases = params.get('pases') || '1';
 
     const archivos = {
-      "1": "/Mis Quince Sofia Elizabeth - 1 Pase.pdf",
-      "2": "/Mis Quince Sofia Elizabeth - 2 Pases.pdf",
-      "3": "/Mis Quince Sofía Elizabeth - 3 pases.pdf",
-      "4": "/Mis Quince Sofía Elizabeth - 4 pases.pdf",
-      "5": "/Mis Quince Sofía Elizabeth - 5 pases.pdf"
+      '1': '/Mis Quince Sofia Elizabeth - 1 Pase.pdf',
+      '2': '/Mis Quince Sofia Elizabeth - 2 Pases.pdf',
+      '3': '/Mis Quince Sofia Elizabeth - 3 Pases.pdf',
+      '4': '/Mis Quince Sofia Elizabeth - 4 Pases.pdf',
+      '5': '/Mis Quince Sofia Elizabeth - 5 Pases.pdf'
     };
 
-    const boton = document.getElementById("verInvitacion");
-    boton.href = archivos[pases] || archivos["1"];
+    const archivoPDF = archivos[pases] || archivos['1'];
+
+    document.getElementById('btn-ver').addEventListener('click', () => {
+      document.getElementById('pantalla-inicio').style.display = 'none';
+      document.getElementById('visor').style.display = 'flex';
+      cargarPDF(archivoPDF);
+    });
+
+    async function cargarPDF(url) {
+      const contenedor = document.getElementById('paginas');
+      const loading = document.getElementById('loading');
+
+      try {
+        const pdf = await pdfjsLib.getDocument(url).promise;
+        loading.style.display = 'none';
+
+        // Renderiza cada página
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const pagina = await pdf.getPage(i);
+
+          // Escala para que ocupe el ancho del teléfono nítidamente
+          const viewport = pagina.getViewport({ scale: 1 });
+          const anchoTarget = Math.min(window.innerWidth, 480);
+          const escala = (anchoTarget * window.devicePixelRatio) / viewport.width;
+          const viewportEscalado = pagina.getViewport({ scale: escala });
+
+          const div = document.createElement('div');
+          div.className = 'pagina-pdf';
+
+          const canvas = document.createElement('canvas');
+          canvas.width = viewportEscalado.width;
+          canvas.height = viewportEscalado.height;
+
+          div.appendChild(canvas);
+          contenedor.appendChild(div);
+
+          await pagina.render({
+            canvasContext: canvas.getContext('2d'),
+            viewport: viewportEscalado
+          }).promise;
+        }
+
+        // Después de renderizar, habilita los links del PDF
+        habilitarLinks(pdf, contenedor);
+
+      } catch (err) {
+        loading.textContent = 'Error cargando el PDF. Intenta de nuevo.';
+        console.error(err);
+      }
+    }
+
+    // Hace los botones/links del PDF clicleables
+    async function habilitarLinks(pdf, contenedor) {
+      const paginas = contenedor.querySelectorAll('.pagina-pdf');
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const pagina = await pdf.getPage(i);
+        const anotaciones = await pagina.getAnnotations();
+        const canvas = paginas[i - 1].querySelector('canvas');
+        const rect = canvas.getBoundingClientRect();
+
+        const viewport = pagina.getViewport({ scale: 1 });
+        const escalaX = canvas.offsetWidth / viewport.width;
+        const escalaY = canvas.offsetHeight / viewport.height;
+
+        anotaciones.forEach(ann => {
+          if (ann.subtype === 'Link' && (ann.url || ann.dest)) {
+            const [x1, y1, x2, y2] = ann.rect;
+
+            const link = document.createElement('a');
+            link.href = ann.url || '#';
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.cssText = `
+              position: absolute;
+              left: ${x1 * escalaX}px;
+              bottom: ${y1 * escalaY}px;
+              width: ${(x2 - x1) * escalaX}px;
+              height: ${(y2 - y1) * escalaY}px;
+              cursor: pointer;
+            `;
+
+            paginas[i - 1].style.position = 'relative';
+            paginas[i - 1].appendChild(link);
+          }
+        });
+      }
+    }
   </script>
 
 </body>
